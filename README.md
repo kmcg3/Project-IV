@@ -17,7 +17,7 @@ This simulation:
 - Includes a Python script to visualise results.
 
 ---
-
+**Some of the files involved in the simulation:**
 | File | Description |
 |------|-------------|
 | [`potential.f90`](temp/NewGmin/source/override/lamina_new/potential.f90) | Energy and gradient definitions |
