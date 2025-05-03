@@ -18,7 +18,7 @@ subroutine set_defaults()
   READ(1,*) F_S
   READ(1,*) BE
   CLOSE(1)
-  !DOUBLE PRECISION, ALLOCATABLE :: BENDING_VAR(:,:) !do we need to do this
+ 
 
 
   R3=H/(N_ROD-1.0) !LC spring equilibrium length
@@ -41,33 +41,7 @@ subroutine set_defaults()
     END IF
   END DO
   
-  ! ALLOCATE(B_ARRAY(N_ROD,N_SEG)) !Changed this
 
-  ! B_ARRAY(1,:)=0.1;
-  ! B_ARRAY(N_ROD,:)=0.1
-
-  ! DO j=1,N_SEG !Changed this
-  !   DO i=2,N_ROD-1
- 	!     !IF ((MOD(i,2)==0) .AND. (MOD(j,2)==0)) THEN
-  !     !IF (MOD(i,2)==0) THEN
-  !       B_ARRAY(i,j)=0.01
-  !     !ELSE
-  !      !B_ARRAY(i,j)=0.01*LOWER_RAT !Interior rod bending stiffness type2
-  !    !END IF
-  !   END DO
-  ! END DO
-
-  !  B_ARRAY(1)=0.0;
-  ! B_ARRAY(N_ROD)=0.0
-  
-  ! DO i=2,N_ROD-1
- 	!   IF (MOD(i,2)==0) THEN
-  !     B_ARRAY(i)=0.01 !Interior rod bending stiffness type1
-  !   ELSE
-  !     B_ARRAY(i)=0.01*LOWER_RAT !Interior rod bending stiffness type2
-  !   END IF
-  ! END DO
- 
 
   KC=100000.0 !End constraint magnitude
   KY=10.0 !Overlap penalisation magnitude
@@ -78,7 +52,7 @@ subroutine set_defaults()
   CAREA=100.0 !Repulsion exponential factor
 
 
-  N = 2*(N_ROD)*(N_SEG-1) !multiplied by 2 for the array including ls as a variable (why n_seg-1)
+  N = 2*(N_ROD)*(N_SEG-1) !multiplied by 2 for the array including ls as a variable 
   !N = SIZE(X)
   !###################!
   ! L-BFGS Parameters !
