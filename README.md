@@ -1,61 +1,92 @@
-# Project-IV
 # Modelling Traumatic Brain Injury
 
-This project simulates filament mechanics relevant to traumatic brain injury using a Fortran-based LBFGS optimisation algorithm. The simulation models bundles of elastic rods and minimises a custom energy functional to understand filament behaviour under mechanical stress.
+This project simulates the mechanical behaviour of bundled filaments — relevant to understanding traumatic brain injury — using a Fortran-based LBFGS optimisation algorithm. The model minimises a custom energy functional to determine the equilibrium configuration of elastic rods under stress.
 
-Originally developed by Chris Prior and Jack Panter, this version has been adapted and extended for dissertation research.
+Originally developed by **Chris Prior** and **Jack Panter**, this version includes major modifications for academic research.
+
+> **Note:** Some file paths are hardcoded and may need to be edited to suit your system. Check:
+> - [`make_runs.sh`](temp/NewGmin/user/lamina_phase_diagram/make_runs.sh)
+> - [`view_coords.py`](temp/NewGmin/user/lamina_phase_diagram/view_coords.py)
+> - Any I/O in Fortran source files (especially in `potential.f90` and `data.f90`)
+
+---
 
 ## Overview
 
-The simulation minimises energy to determine the equilibrium configuration of rod-like filaments. This process involves:
+This simulation:
+- Minimises a filament energy functional using LBFGS
+- Uses segment angles and lengths as parameters
+- Outputs the lowest-energy configuration to a file
+- Includes a Python script to visualise results
 
-- Computing bending energy and gradients (in `potential.f90`)
-- Managing rod and segment data (in `data.f90`)
-- Running an LBFGS optimisation loop
-- Outputting the minimum-energy configuration (as a `lowest` file)
-- Visualising filament geometry (using `viewcoords.py`)
+---
 
-## File Structure
+## Key Components
 
-Top-level files and folders:
+| File | Description |
+|------|-------------|
+| [`potential.f90`](temp/NewGmin/source/override/lamina_new/potential.f90) | Energy and gradient definitions (core logic and edits) |
+| [`data.f90`](temp/NewGmin/user/lamina_phase_diagram/data.f90) | Defines rod structure and input parameters |
+| [`make_runs.sh`](temp/NewGmin/user/lamina_phase_diagram/make_runs.sh) | Shell script to compile and run simulation |
+| [`view_coords.py`](temp/NewGmin/user/lamina_phase_diagram/view_coords.py) | Python script to plot final filament configuration |
+| [`lowest`](temp/NewGmin/lowest) | Output file containing optimised coordinates |
 
-- `potential.f90` – Custom energy and gradient definitions (main modifications here)
-- `data.f90` – Input and structural data definitions
-- `make_runs.sh` – Bash script to compile and run the simulation
-- `viewcoords.py` – Python script to visualise output from the `lowest` file
-- Other `.f90` files – Supporting modules for geometry, memory, etc.
-- `lowest` – Output file containing optimised coordinates
-- `README.md` – This file
+---
 
-## Running the Simulation
+## Custom Modifications
 
-To compile and run the code, execute the following in your terminal:
+This version includes the following changes as part of a dissertation:
 
-bash make_runs.sh
+- Created a `LENGTHS()` variable to model segment lengths dynamically
+- Added new gradient terms in `potential.f90` to support extended energy models
+- Introduced a `test_gradient()` function to compare analytical and numerical gradients
+- Developed (in progress) a new curvature-based energy and gradient formulation
 
-This script handles compilation and launches the simulation.
+---
+
+## How to Run
+
+Open a terminal, navigate to the `lamina_phase_diagram` directory, and run:
+
+```bash
+./make_runs.sh
+```
+
+This will compile the Fortran code and begin the simulation process.
+
+---
 
 ## Visualising Results
 
-Once the simulation finishes, the results will be saved in a file called `lowest`. To visualise the output, run:
+After the simulation, the optimised configuration is saved in the `lowest` file. You can visualise it with:
 
-python3 viewcoords.py
+```bash
+python3 view_coords.py
+```
 
-Make sure you have Python 3 and the `matplotlib` library installed.
+Make sure:
+- You are in `lamina_phase_diagram`
+- Python 3 and `matplotlib` are installed
+
+---
 
 ## Editing the Model
 
-You can customise the simulation by editing the following:
+To modify the simulation:
 
-- `potential.f90` – Modify energy terms and gradient computations
-- `data.f90` – Change number of rods, segment lengths, initial angles, or parameters
+- Use [`potential.f90`](temp/NewGmin/source/override/lamina_new/potential.f90) to change energy/gradient calculations or add new terms
+- Use [`data.f90`](temp/NewGmin/user/lamina_phase_diagram/data.f90) to change the number of rods, initial conditions, segment lengths, etc.
 
-Other files may require edits if you introduce new features or constraints.
+Other `.f90` files may also need edits depending on your extensions.
+
+---
 
 ## Acknowledgements
 
-- Original code developed by **Chris Prior** and **Jack Panter**
-- This version includes modifications made for a **dissertation on traumatic brain injury modelling**
+- Original code by **Chris Prior** and **Jack Panter**
+- Modified and extended for a **dissertation on traumatic brain injury modelling**
+
+---
 
 ## License
 
