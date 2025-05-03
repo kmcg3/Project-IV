@@ -53,11 +53,13 @@ This will compile the Fortran code and begin the simulation process.
 
 ## Visualising Results
 
-After the simulation, the lowest energy configuration is saved in the `lowest` file. You can visualise it with:
+After the simulation, the lowest energy configuration is saved in the `lowest` file. You can visualise it with [`view_coords.py`](temp/NewGmin/user/lamina_phase_diagram/view_coords.py):
 
 ```bash
 python3 view_coords.py
 ```
+
+Lengths of each filament in the bundle should be printed in the terminal.
 
 Make sure:
 - You are in `lamina_phase_diagram`;
