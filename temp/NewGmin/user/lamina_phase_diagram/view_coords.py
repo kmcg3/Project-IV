@@ -37,8 +37,8 @@ coords[:,0,1]=inits[:,1]
 s=0
 for i in range(0,N_ROD):
 	for j in range(1,N_SEG):
-		coords[i,j,0]=coords[i,j-1,0]+angles[s+1990]*np.cos(angles[s]) #1990
-		coords[i,j,1]=coords[i,j-1,1]+angles[s+1990]*np.sin(angles[s])
+		coords[i,j,0]=coords[i,j-1,0]+angles[s+199*N_ROD]*np.cos(angles[s]) 
+		coords[i,j,1]=coords[i,j-1,1]+angles[s+199*N_ROD]*np.sin(angles[s])
 		s=s+1
 
 #5) View the results
