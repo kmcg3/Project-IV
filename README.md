@@ -2,22 +2,19 @@
 
 This project simulates the mechanical behaviour of bundled filaments — relevant to understanding traumatic brain injury — using a Fortran-based LBFGS optimisation algorithm. The model minimises a custom energy functional to determine the equilibrium configuration of elastic rods under stress.
 
-Originally developed by **Chris Prior** and **Jack Panter**, this version includes major modifications for academic research.
+Originally developed by **Chris Prior** and **Jack Panter**, this version includes modifications for extensibility of the model and introduces some new energies and gradients.
 
-> **Note:** Some file paths are hardcoded and may need to be edited to suit your system. Check:
-> - [`make_runs.sh`](temp/NewGmin/user/lamina_phase_diagram/make_runs.sh)
-> - [`view_coords.py`](temp/NewGmin/user/lamina_phase_diagram/view_coords.py)
-> - Any I/O in Fortran source files (especially in `potential.f90` and `data.f90`)
+> **Note:** Some file paths are hardcoded and may need to be edited.
 
 ---
 
 ## Overview
 
 This simulation:
-- Minimises a filament energy functional using LBFGS
-- Uses segment angles and lengths as parameters
-- Outputs the lowest-energy configuration to a file
-- Includes a Python script to visualise results
+- Minimises a filament bundle's energy function using the LBFGS algorithm;
+- Uses angles and lengths as parameters;
+- Outputs the lowest-energy configuration;
+- Includes a Python script to visualise results.
 
 ---
 
@@ -25,8 +22,8 @@ This simulation:
 
 | File | Description |
 |------|-------------|
-| [`potential.f90`](temp/NewGmin/source/override/lamina_new/potential.f90) | Energy and gradient definitions (core logic and edits) |
-| [`data.f90`](temp/NewGmin/user/lamina_phase_diagram/data.f90) | Defines rod structure and input parameters |
+| [`potential.f90`](temp/NewGmin/source/override/lamina_new/potential.f90) | Energy and gradient definitions |
+| [`data.f90`](temp/NewGmin/user/lamina_phase_diagram/data.f90) | inputs data for  |
 | [`make_runs.sh`](temp/NewGmin/user/lamina_phase_diagram/make_runs.sh) | Shell script to compile and run simulation |
 | [`view_coords.py`](temp/NewGmin/user/lamina_phase_diagram/view_coords.py) | Python script to plot final filament configuration |
 | [`lowest`](temp/NewGmin/lowest) | Output file containing optimised coordinates |
