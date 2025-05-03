@@ -100,30 +100,6 @@ SUBROUTINE INIT_SYSTEM()
   ALLOCATE(TRIANGLES(2*(N_ROD-1)*N_SEG,3))
   TRIANGLES=0
   S1=1
- ! DO i=1,N_ROD-1
-!	DO j=1,N_SEG+1
-!		IF (j<N_SEG+1) THEN
-!			NODE0=(i-1)*(N_SEG+1)+j
-!			NODE1=(i)*(N_SEG+1)+j+1
-!			NODE2=(i)*(N_SEG+1)+j
-!			TRIANGLES(S1,1)=NODE0
-!			TRIANGLES(S1,2)=NODE1
-!			TRIANGLES(S1,3)=NODE2	
-!			S1=S1+1
-!		ENDIF
-!		
-!		IF (j>1) THEN
-!			NODE0=(i-1)*(N_SEG+1)+j
-!			NODE1=(i)*(N_SEG+1)+j
-!			NODE2=(i)*(N_SEG+1)+j-1
-!			TRIANGLES(S1,1)=NODE0
-!			TRIANGLES(S1,2)=NODE1
-!			TRIANGLES(S1,3)=NODE2	
-!			S1=S1+1
-!		ENDIF
-!		
-!	ENDDO
-!  ENDDO
 
   DO i=1,N_ROD-1
 	DO j=1,N_SEG
@@ -149,18 +125,13 @@ SUBROUTINE INIT_SYSTEM()
 	ENDDO
   ENDDO
 
-!DO i=1,2*(N_ROD-1)*N_SEG
-!	PRINT *, TRIANGLES(i,:)
-!ENDDO
-!STOP
-
 
 END SUBROUTINE INIT_SYSTEM
 !------------------------------------------------------------------------------------------
 
 !------------------------------------------------------------------------------------------
 !System perturbation
-SUBROUTINE PERTURB_COORDINATES() !THIS DOES NOTHING?
+SUBROUTINE PERTURB_COORDINATES() !THIS DOES NOTHING
   IMPLICIT NONE
   INTEGER :: i, j, CUR 
 
@@ -196,34 +167,6 @@ SUBROUTINE PERTURB_COORDINATES() !THIS DOES NOTHING?
 
 END SUBROUTINE PERTURB_COORDINATES
 
-!NEW...
-! SUBROUTINE PERTURB_LENGTHS()
-!   IMPLICIT NONE
-!   INTEGER :: i, j, CUR 
-
-!   !This is where we can make initial changes to the LENGTHS from the initial input LENGTHS X
-!   !X((N/2)+1:N)=0.0001
-!   LENGTHS=X((N/2)+1:N)
-!   PRINT *, "PERT COORDS LENGTHS = " , LENGTHS
-
-!   DO i=1,N_ROD
-! 	DO j=1,N_SEG-1
-! 		CUR=(i-1)*(N_SEG-1)+j
-! 		IF (j <= N_SEG-25) THEN
-! 			!LENGTHS(CUR) = 0.00
-! 		ENDIF
-! 	ENDDO
-!   ENDDO
-
-!   X((N/2)+1:N)=LENGTHS
-
-! OPEN(1,FILE='coords.perturb', STATUS='UNKNOWN', POSITION='APPEND') !CHANGED THIS...NOT SURE IT WILL WORK
-! WRITE(1,'(F20.10)') LENGTHS
-! CLOSE(1)
-
-
-
-!END SUBROUTINE PERTURB_LENGTHS
 
 
 !------------------------------------------------------------------------------------------
@@ -234,7 +177,7 @@ Subroutine IMPLEMENT_POTENTIAL(X,G,E,GTEST)
   IMPLICIT NONE
   LOGICAL GTEST
   DOUBLE PRECISION :: X(N), E, G(N)
-!PRINT *, "X", X
+
 ANGLES=X(1:(N/2))
 LENGTHS=X((N/2)+1:N)
 
@@ -254,15 +197,11 @@ LENGTHS=X((N/2)+1:N)
   G(1:N/2) = GRAD_A * CM1
   G((N/2)+1:N) = GRAD_L * CM1
 
- ! G = GRAD * CM1
+
   E = E * CM1
   X(1:(N/2))=ANGLES !FINE
   X((N/2)+1:N)=LENGTHS
-  !PRINT *, "After PERTURB_COORDS X = " , X
-  !PRINT *, "X = ", X((N/2)+1:N)
-! OPEN(1,FILE='coords.perturb')
-! WRITE(1,'(F20.10)') X
-! CLOSE(1)
+  
 !CALL TEST_GRADIENT(G,X)
 
 END SUBROUTINE IMPLEMENT_POTENTIAL
@@ -320,20 +259,6 @@ SUBROUTINE COMPUTE_ENERGY(E)
   ETH=0.0
   EL=0.0
 
-
-!PRINT *, "X ENG", X(1)
-!PRINT *, "lengths and angles in energy = ", LENGTHS, ANGLES
-!PRINT *, LENGTHS
-! DO i=1,N_ROD
-!	DO j=1,N_SEG+1
-!		CUR=(i-1)*(N_SEG+1)+j
-!		PRINT *, COORDS(CUR,:)
-!	ENDDO
-! ENDDO
- !PRINT *, "X Energy", X(1)
- !PRINT *, "L Energy", LENGTHS(1)
- ! PRINT *, "A Energy", ANGLES(1)
-
   !1) Bending energy
   !1.1) Interior rods
   DO i=2,N_ROD-1
@@ -357,7 +282,7 @@ SUBROUTINE COMPUTE_ENERGY(E)
 	CUR=j
 	EB = EB + (2*BE/LENGTHS(CUR))*( tan(0.5*(ANGLES(CUR)-ANGLES(CUR-1))) )**2
 
-  !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !   D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !   ADIFF = ANGLES(CUR)-ANGLES(CUR-1)
   
@@ -370,8 +295,8 @@ SUBROUTINE COMPUTE_ENERGY(E)
   DO j=2,N_SEG-1
 	CUR=(N_ROD-1)*(N_SEG-1)+j
 	EB = EB +(2*BE/LENGTHS(CUR))*( tan(0.5*(ANGLES(CUR)-ANGLES(CUR-1))) )**2
-! !NEW CURVATURE -------------
-!   D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
+  !NEW CURVATURE (IN PROGRESS)-------------
+  !   D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !   ADIFF = ANGLES(CUR)-ANGLES(CUR-1)
   
 !   EB = EB + BE*8*LENGTHS(CUR)*(sin(ADIFF)**2)/D
@@ -407,7 +332,6 @@ SUBROUTINE COMPUTE_ENERGY(E)
 	ELI = ELI + COORDS(CUR,1)
   ENDDO
   ELI=ELI*F_I
-!PRINT *, "ELI", ELI
 
   !4) Sclera load
 
@@ -415,25 +339,19 @@ SUBROUTINE COMPUTE_ENERGY(E)
   DO j=2,N_SEG+1
 	CUR=j
 	ETEMP = ETEMP + COORDS(CUR,2)-COORDS(1,2)
-  !PRINT *, "ETEMP", ETEMP
   ENDDO
   ELS = ELS-ETEMP*F_S
-  ! PRINT *, "ETE", ETEMP*F_S
-  ! PRINT *, "ELS", ELS
-  !ELS is just 0 each time
+
 
   ETEMP=0.0
   DO j=2,N_SEG+1
   	CUR=(N_ROD-1)*(N_SEG+1)+j
   	ETEMP = ETEMP + COORDS(CUR,2)-COORDS((N_ROD-1)*(N_SEG+1)+1,2)
-   ! PRINT *, "C", COORDS(CUR,2)-COORDS((N_ROD-1)*(N_SEG+1)+1,2)
-   ! PRINT *, "E", ETEMP
+
   ENDDO
-  !  PRINT *, "ete", ETEMP
-  !  PRINT *, "ETEMP", ETEMP
+
   ELS = ELS+ETEMP*F_S
-  ! PRINT *, "F_S", F_S
-  ! PRINT *, "ELS", ELS
+
 
   !5) Angular soft constraints of rod ends
   !5.1) TWO ENDS SHOULD BE ALIGNED
@@ -444,8 +362,6 @@ SUBROUTINE COMPUTE_ENERGY(E)
   
   ENDDO
 
- !PRINT *, "EC", EC
-  	  !PRINT *, "lengths in eng3 = ", LENGTHS(i)
   !5.2) END ANGLES CONSTRAINED (PINNED)
   DO i=1,N_ROD
     CUR=(i-1)*(N_SEG-1)+1
@@ -457,21 +373,6 @@ SUBROUTINE COMPUTE_ENERGY(E)
     EC = EC + 0.5*KC*(1-COS(ANGLES(CUR)))*(1-COS(ANGLES(CUR)))
     ENDDO
   ! PRINT *, "EC", EC
-  !6) Energy penalising a node on a rod below becoming above the same node on the rod above
-  ! DO i=1,N_ROD-1
-	! DO j=1,N_SEG+1
-	! 	CUR = (i-1)*(N_SEG+1) + j
-	! 	CURP = (i)*(N_SEG+1) + j
-	! 	TEMP= 0.0
-	! 	TEMP = ( 1.0 - TANH((COORDS(CURP,2)-COORDS(CUR,2))/WY) )
-	! 	TEMP = TEMP*( 2.0 - (COORDS(CURP,2)-COORDS(CUR,2)) )
-	! 	TEMP = TEMP * KY * 0.5
-		
-	! EY = EY+TEMP
-
-	! ENDDO
-  ! ENDDO OG
-
    !6) Repulsion term that prevents the node triangles having <0 area
   DO i=1,2*(N_ROD-1)*N_SEG
 	X0=COORDS(TRIANGLES(i,1),1)
@@ -481,23 +382,11 @@ SUBROUTINE COMPUTE_ENERGY(E)
 	YP=COORDS(TRIANGLES(i,2),2)
 	YM=COORDS(TRIANGLES(i,3),2)
 	AREA=0.5*((XP-X0)*(YM-Y0)-(XM-X0)*(YP-Y0))
-!PRINT *, "AREA", AREA
-!PRINT *, "AREA0", AREA0
+
 	EAREA=EAREA+KAREA*EXP(-CAREA*AREA/AREA0)
   ENDDO
-  !PRINT *, "EAREA", EAREA
- 
-  !7) Energy penalising an angle geeing above pi
   
-  !DO i=1,N_ROD
-	!DO j=1,N_SEG-1
-	!	CUR=(i-1)*(N_SEG-1)+j
-  ! TEMP = ANGLES(CUR)-3.14159265359
-	!	ETH = ETH + KY*TANH((ABS(ANGLES(CUR))-3.14159265359)/0.3);
-	!ENDDO
-  !ENDDO
-  
-!   !8) Energy penalising segment lengths being zero
+!   !8) Energy penalising segment lengths being too small
 ! !HARMONIC--------------
 !   DO i=1,N_ROD
 !   DO j=1,N_SEG+1
@@ -516,16 +405,9 @@ SUBROUTINE COMPUTE_ENERGY(E)
     EL = EL + (KL*(LS_0**2)/72)*((LS_0/LENGTHS(CUR))**12-2*(LS_0/LENGTHS(CUR))**6)
   ENDDO
   ENDDO
-!PRINT *, "E", EL
-! !  E = EB + ES + ELI + ELS + EC +EY
+
 
 E = EB + ES + ELI + EC + EAREA + EL
-
-!PRINT *, EB, ES, ELI, ELS, EC, EY, ETH, EL, 
-!PRINT *, EAREA
-!PRINT *, "LENGTHS 1", LENGTHS(1)
-!PRINT *,"E", E
-!PRINT *, "Energy computed"
 
 END SUBROUTINE COMPUTE_ENERGY
 !------------------------------------------------------------------------------------------
@@ -559,7 +441,7 @@ SUBROUTINE COMPUTE_GRAD()
 
 			GRAD_A(CUR) = GRAD_A(CUR) + 2*B_ARRAY(i)/LENGTHS(CUR)*( TAN(THETAM)/(COS(THETAM))**2 - TAN(THETAP)/(COS(THETAP))**2 )
 
-! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -583,7 +465,7 @@ DO i=2,N_ROD-1
 
 		GRAD_L(CUR) = GRAD_L(CUR) - 2*B_ARRAY(i)/(LENGTHS(CUR)**2)*( tan(0.5*(ANGLES(CUR)-ANGLES(CUR-1))) )**2
 
-! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMML = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURM)*COS(2*THETAM))
 !     NUMPL = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURP)*COS(2*THETAP))
@@ -606,7 +488,7 @@ ENDDO
  
 		GRAD_A(CUR) = GRAD_A(CUR) + 2*B_ARRAY(i)/LENGTHS(CUR)*( - TAN(THETAP)/(COS(THETAP))**2 )
 
-!     ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -625,7 +507,7 @@ ENDDO
   
       GRAD_L(CUR) = GRAD_L(CUR) - 2*B_ARRAY(i)/(LENGTHS(CUR)**2)*( tan(0.5*(ANGLES(CURP)-ANGLES(CUR))) )**2
 
-! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMML = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURM)*COS(2*THETAM))
 !     NUMPL = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURP)*COS(2*THETAP))
@@ -647,7 +529,7 @@ ENDDO
  
 		GRAD_A(CUR) = GRAD_A(CUR) + 2*B_ARRAY(i)/LENGTHS(CUR)*( TAN(THETAM)/(COS(THETAM))**2 )
 
-!     ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -690,7 +572,7 @@ DO j=2,N_SEG-2
 
 		GRAD_A(CUR) = GRAD_A(CUR) + 2*BE/LENGTHS(CUR)*( TAN(THETAM)/(COS(THETAM))**2 - TAN(THETAP)/(COS(THETAP))**2 )
 
-!     ! !NEW CURVATURE -------------
+   !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -711,7 +593,7 @@ DO j=2,N_SEG-2
 
 		GRAD_A(CUR) = GRAD_A(CUR) + 2*BE/LENGTHS(CUR)*( TAN(THETAM)/(COS(THETAM))**2 - TAN(THETAP)/(COS(THETAP))**2 )
 
-!     ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -734,7 +616,7 @@ DO j=2,N_SEG-2
 
 	GRAD_L(CUR) = GRAD_L(CUR) - 2*BE/(LENGTHS(CUR)**2)*( tan(0.5*(ANGLES(CUR)-ANGLES(CURM))) )**2
 
-    ! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMML = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURM)*COS(2*THETAM))
 !     NUMPL = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURP)*COS(2*THETAP))
@@ -755,7 +637,7 @@ DO j=2,N_SEG-2
 
   GRAD_L(CUR) = GRAD_L(CUR) - 2*BE/(LENGTHS(CUR)**2)*( tan(0.5*(ANGLES(CUR)-ANGLES(CURM))) )**2 
 
-    ! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMML = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURM)*COS(2*THETAM))
 !     NUMPL = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURP)*COS(2*THETAP))
@@ -776,7 +658,7 @@ ENDDO
 
 		GRAD_A(CUR) = GRAD_A(CUR) + 2*BE/LENGTHS(CUR)*( - TAN(THETAP)/(COS(THETAP))**2 )
 
-! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -785,7 +667,7 @@ ENDDO
 !  !-------------------------  
   GRAD_L(CUR) = GRAD_L(CUR) - 2*BE/(LENGTHS(CUR)**2)*( tan(0.5*(ANGLES(CURP)-ANGLES(CUR))) )**2
 
-   ! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMML = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURM)*COS(2*THETAM))
 !     NUMPL = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURP)*COS(2*THETAP))
@@ -805,7 +687,7 @@ ENDDO
 
 		GRAD_A(CUR) = GRAD_A(CUR) + 2*BE/LENGTHS(CUR)*( TAN(THETAM)/(COS(THETAM))**2 ) 
 
-!     ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -815,7 +697,7 @@ ENDDO
 
     GRAD_L(CUR) = GRAD_L(CUR) - 2*BE/(LENGTHS(CUR)**2)*( tan(0.5*(ANGLES(CUR)-ANGLES(CURM))) )**2
 
-   ! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMML = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURM)*COS(2*THETAM))
 !     NUMPL = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURP)*COS(2*THETAP))
@@ -836,7 +718,7 @@ ENDDO
 
 		GRAD_A(CUR) = GRAD_A(CUR) + 2*BE/LENGTHS(CUR)*( - TAN(THETAP)/(COS(THETAP))**2 )
 
-! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -846,7 +728,7 @@ ENDDO
 
   GRAD_L(CUR) = GRAD_L(CUR) - 2*BE/(LENGTHS(CUR)**2)*( tan(0.5*(ANGLES(CURP)-ANGLES(CUR))) )**2
 
-    ! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMML = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURM)*COS(2*THETAM))
 !     NUMPL = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURP)*COS(2*THETAP))
@@ -866,7 +748,7 @@ ENDDO
 
 		GRAD_A(CUR) = GRAD_A(CUR) + 2*BE/LENGTHS(CUR)*( TAN(THETAM)/(COS(THETAM))**2 ) 
 
-! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMM = (SIN(2*THETAM)**3)*LENGTHS(CUR)*LENGTHS(CURM)
 !     NUMP = (SIN(2*THETAP)**3)*LENGTHS(CUR)*LENGTHS(CURP)
@@ -876,7 +758,7 @@ ENDDO
 
   GRAD_L(CUR) = GRAD_L(CUR) - 2*BE/(LENGTHS(CUR)**2)*( tan(0.5*(ANGLES(CUR)-ANGLES(CURM))) )**2
 
-    ! ! !NEW CURVATURE -------------
+  !NEW CURVATURE (IN PROGRESS)-------------
 !     D = ((COORDS(CUR+1,1)-COORDS(CUR-1,1))**2 + (COORDS(CUR+1,2)-COORDS(CUR-1,2))**2)**(1/2)
 !     NUMML = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURM)*COS(2*THETAM))
 !     NUMPL = LENGTHS(CUR)*(LENGTHS(CUR)+LENGTHS(CURP)*COS(2*THETAP))
@@ -894,11 +776,6 @@ ENDDO
 
 	R=SQRT( (COORDS(NODE1,1)-COORDS(NODE2,1))**2 + (COORDS(NODE1,2)-COORDS(NODE2,2))**2 )
 	
-	! X-derivatives
-	!With 1/R term
-	!TEMP=K_ARRAY(BONDTYPE)*(COORDS(NODE1,1)-COORDS(NODE2,1))*(1.0-R_ARRAY(BONDTYPE)/R)*(1/R*(1-0.5*(1.0-R_ARRAY(BONDTYPE)/R)))
-	!Without 1/R term
-	!TEMP=K_ARRAY(BONDTYPE)*(COORDS(NODE1,1)-COORDS(NODE2,1))*(1.0-R_ARRAY(BONDTYPE)/R) OG
 
   ! !HARMONIC -------------
    !TEMP=2*(K_ARRAY(BONDTYPE)/(R_ARRAY(BONDTYPE)**2))*(COORDS(NODE1,1)-COORDS(NODE2,1))*(1.0-R_ARRAY(BONDTYPE)/R) !PROPER
@@ -909,16 +786,6 @@ TEMP = 12 * K_ARRAY(BONDTYPE) * ((R_ARRAY(BONDTYPE)**2)/72) * ( (R_ARRAY(BONDTYP
     !--------------------
 	GRAD_SPAT(NODE1,1) = GRAD_SPAT(NODE1,1) + TEMP
 	GRAD_SPAT(NODE2,1) = GRAD_SPAT(NODE2,1) - TEMP
-
-
-
-
-
-	! Y-derivatives
-	!With 1/R term
-	!TEMP=K_ARRAY(BONDTYPE)*(COORDS(NODE1,2)-COORDS(NODE2,2))*(1.0-R_ARRAY(BONDTYPE)/R)*(1/R*(1-0.5*(1.0-R_ARRAY(BONDTYPE)/R)))
-	!Without 1/R term
-	!TEMP=K_ARRAY(BONDTYPE)*(COORDS(NODE1,2)-COORDS(NODE2,2))*(1.0-R_ARRAY(BONDTYPE)/R) OG
 
   !!HARMONIC -----------
   !TEMP=2*(K_ARRAY(BONDTYPE)/(R_ARRAY(BONDTYPE)**2))*(COORDS(NODE1,2)-COORDS(NODE2,2))*(1.0-R_ARRAY(BONDTYPE)/R) !PROPER
@@ -1040,52 +907,6 @@ TEMP = 12.0 * K_ARRAY(BONDTYPE) * ((R_ARRAY(BONDTYPE)**2)/72) * ( (R_ARRAY(BONDT
   ENDDO
   GRAD_SPAT=GRAD_SPAT*(-CAREA*KAREA/AREA0*0.5)
 
-
-  ! !6.1) Compute the spatial gradients OG
-  ! !6.1.1) Interior rods
-  ! DO i=2,N_ROD-1
-	! DO j=1,N_SEG+1
-	! 	CUR = (i-1)*(N_SEG+1) + j
-	! 	CURP = (i)*(N_SEG+1) +j
-	! 	CURM= (i-2)*(N_SEG+1) +j
-		
-	! 	TEMP = 1.0 - tanh( (COORDS(CURP,2)-COORDS(CUR,2))/WY )
-	! 	TEMP = TEMP + (2.0-COORDS(CURP,2)+COORDS(CUR,2))*( 1.0/WY * 1.0/(COSH((COORDS(CURP,2)-COORDS(CUR,2))/WY))**2 )
-	! 	TEMP = TEMP*KY*0.5
-
-	! 	TEMP_P = -1.0 + tanh( (COORDS(CUR,2)-COORDS(CURM,2))/WY )
-	! 	TEMP_P = TEMP_P - (2-COORDS(CUR,2)+COORDS(CURM,2))*( 1.0/WY * 1.0/(COSH((COORDS(CUR,2)-COORDS(CURM,2))/WY))**2 )
-	! 	TEMP_P = TEMP_P*KY*0.5
-
-  !  		GRAD_SPAT(CUR,2)=TEMP+TEMP_P
-
-	! ENDDO
-  ! ENDDO
-
-  ! !6.1.2) Exterior rods OG
-  ! !Rod 1
-  ! DO j=1,N_SEG+1
-	! CUR = (1-1)*(N_SEG+1) + j
-	! CURP = (1)*(N_SEG+1) +j
-
-	! TEMP = 1.0 - tanh( (COORDS(CURP,2)-COORDS(CUR,2))/WY )
-	! TEMP = TEMP + (2-COORDS(CURP,2)+COORDS(CUR,2))*( 1.0/WY * 1.0/(COSH((COORDS(CURP,2)-COORDS(CUR,2))/WY))**2 )
-	! TEMP = TEMP*KY*0.5
-
-  !  	GRAD_SPAT(CUR,2)=TEMP
-  ! ENDDO
-  ! !Rod N
-  ! DO j=1,N_SEG+1
-	! CUR = (N_ROD-1)*(N_SEG+1) + j
-	! CURM= (N_ROD-2)*(N_SEG+1) +j
-
-	! TEMP_P = -1.0 + tanh( (COORDS(CUR,2)-COORDS(CURM,2))/WY )
-	! TEMP_P = TEMP_P - (2-COORDS(CUR,2)+COORDS(CURM,2))*( 1.0/WY * 1.0/(COSH((COORDS(CUR,2)-COORDS(CURM,2))/WY))**2 )
-	! TEMP_P = TEMP_P*KY*0.5
-
-  !  	GRAD_SPAT(CUR,2)=TEMP_P
-  ! ENDDO
-
   
   !6.2.1) Now convert these to dE/dtheta_i
   DO i=1,N_ROD
@@ -1113,96 +934,7 @@ TEMP = 12.0 * K_ARRAY(BONDTYPE) * ((R_ARRAY(BONDTYPE)**2)/72) * ( (R_ARRAY(BONDT
 		ENDDO		
 	ENDDO
   ENDDO
-  !PRINT *, GRAD_L
 
-!   !6.2) Compute the angular and length gradients 
-!   !6.2.1) Interior rods
-!   !Angles:
-!   DO i=2,N_ROD-1
-! 	DO j=1,N_SEG-1
-! 		! 1D location of current angle
-! 		CUR=(i-1)*(N_SEG-1)+j
-	
-! 		DO k=j+1,N_SEG+1
-! 			! 1D location of a node which the current angle affects
-! 			NODE_K=(i-1)*(N_SEG+1)+k+1
-			
-! 			!GRAD(CUR) = GRAD(CUR) + LENGTHS(j)*COS(ANGLES(CUR))*GRAD_SPAT(NODE_K,2)
-!       GRAD_A(CUR) = GRAD_A(CUR) - LENGTHS(CUR)*SIN(ANGLES(CUR))*GRAD_SPAT(NODE_K,1) + LENGTHS(CUR)*COS(ANGLES(CUR))*GRAD_SPAT(NODE_K,2)
-! 		ENDDO		
-! 	ENDDO
-!   ENDDO
-!  !Lengths:
-!   DO i=2,N_ROD-1
-!     DO j=1,N_SEG-1
-!       ! 1D location of current angle
-!       CUR=(i-1)*(N_SEG-1)+j
-    
-!       DO k=j+1,N_SEG+1
-!         ! 1D location of a node which the current angle affects
-!         NODE_K=(i-1)*(N_SEG+1)+k+1
-        
-!         !GRAD(CUR) = GRAD(CUR) + LENGTHS(j)*COS(ANGLES(CUR))*GRAD_SPAT(NODE_K,2)
-!         GRAD_L(CUR) = GRAD_L(CUR) + COS(ANGLES(CUR))*GRAD_SPAT(NODE_K,1) + SIN(ANGLES(CUR))*GRAD_SPAT(NODE_K,2)
-!       ENDDO		
-!     ENDDO
-!     ENDDO
-
-!   !6.2.2) Exterior rods
-!   !Angles:
-! 	DO j=1,N_SEG-1
-! 		! 1D location of current angle
-! 		CUR=j
-	
-! 		DO k=j+1,N_SEG+1
-! 			!First rod
-! 			NODE_K=k+1
-! 			GRAD_A(CUR) = GRAD_A(CUR) - LENGTHS(CUR)*SIN(ANGLES(CUR))*GRAD_SPAT(NODE_K,1)+ LENGTHS(CUR)*COS(ANGLES(CUR))*GRAD_SPAT(NODE_K,2)
-! 		ENDDO
-! 	ENDDO
-  
-!   DO j=1,N_SEG-1
-! 		! 1D location of current angle
-! 		CUR=(N_ROD-1)*(N_SEG-1)+j
-	
-! 		DO k=j+1,N_SEG+1
-! 			!First rod
-! 			NODE_K=(N_ROD-1)*(N_SEG+1)+k+1
-! 			GRAD_A(CUR) = GRAD_A(CUR) - LENGTHS(CUR)*SIN(ANGLES(CUR))*GRAD_SPAT(NODE_K,1) + LENGTHS(CUR)*COS(ANGLES(CUR))*GRAD_SPAT(NODE_K,2)
-! 		ENDDO
-! 	ENDDO
-!   !Lengths:
-!   DO j=1,N_SEG-1
-! 		! 1D location of current length
-! 		CUR=j
-	
-! 		DO k=j+1,N_SEG+1
-! 			!First rod
-! 			NODE_K=k+1
-! 			GRAD_L(CUR) = GRAD_L(CUR) + COS(ANGLES(CUR))*GRAD_SPAT(NODE_K,1)+ SIN(ANGLES(CUR))*GRAD_SPAT(NODE_K,2)
-! 		ENDDO
-! 	ENDDO
-  
-!   DO j=1,N_SEG-1
-! 		! 1D location of current length
-! 		CUR=(N_ROD-1)*(N_SEG-1)+j
-	
-! 		DO k=j+1,N_SEG+1
-! 			!First rod
-! 			NODE_K=(N_ROD-1)*(N_SEG+1)+k+1
-! 			GRAD_A(CUR) = GRAD_A(CUR) +COS(ANGLES(CUR))*GRAD_SPAT(NODE_K,1) + SIN(ANGLES(CUR))*GRAD_SPAT(NODE_K,2)
-! 		ENDDO
-! 	ENDDO
-
-! !   !7) Energy penalising an angle geeing above pi
-  
-! !   !DO i=1,N_ROD
-! ! 	!DO j=1,N_SEG-1
-! ! 	!	CUR=(i-1)*(N_SEG-1)+j
-! ! 	!	ETH = ETH + KY*TANH((ABS(ANGLES(CUR))-3.14159265359)/0.3);
-! !   ! GRAD(CUR) = GRAD(CUR)+
-! ! 	!ENDDO
-! !   !ENDDO
 
 !   !8) Energy penalising length being 0 -- very soft constraint... :(
 ! !HARMONIC-----------
@@ -1237,6 +969,7 @@ END SUBROUTINE COMPUTE_GRAD
 !Test the gradient vs a finite difference approximation
 SUBROUTINE TEST_GRADIENT(G,X)
 
+!ORIGINAL TEST_GRADIENT
 ! IMPLICIT NONE
 ! INTEGER :: I
 ! DOUBLE PRECISION :: DT, A_0, A_P, A_M, E_P, E_M, TEST_GRAD(N), GRAD_DIFF(N), G(N)
@@ -1286,6 +1019,7 @@ SUBROUTINE TEST_GRADIENT(G,X)
 ! CLOSE(1)
 
 !-----------------------------------------------------------
+!NEW TEST_GRADIENT FOR EXTENSIBILITY
 IMPLICIT NONE
 INTEGER :: I
 DOUBLE PRECISION :: DT, A_0, A_P, A_M, L_0, L_P, L_M, E_P, E_M, TEST_GRAD(N), GRAD_DIFF(N), G(N), X(N)
