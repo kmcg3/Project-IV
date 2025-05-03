@@ -7,8 +7,6 @@ path = "~/Desktop/NewGmin/user/lamina_phase_diagram"
 
 filename="/Users/katemcgarva/Desktop/NewGmin/user/lamina_phase_diagram/lamina_NROD10_NSEG_200_RAT5/0.0267F_S0K30.001BsRat1.0Obc0.1_1"
 
-#filename="/Users/katemcgarva/Desktop/NewGmin/results/bending_stiffness/lamina_NROD10_NSEG_200_RAT5/0.019F_S0K30.0001BsRat1.0Obc0.05_1"
-
 mycoords=(filename + "/lowest")
 #X=(filename + "/coords.perturb")
 nheader=4
@@ -19,12 +17,9 @@ nheaderinit=0
 N_ROD=10
 N_SEG=200
 L=5
-#N = 2*(N_ROD)*(N_SEG-1)
 
 #3) Read in the coordinates
 fid = open('/Users/katemcgarva/Desktop/NewGmin/user/lamina_phase_diagram/lamina_NROD10_NSEG_200_RAT5/0.0267F_S0K30.001BsRat1.0Obc0.1_1/lowest', 'r')
-
-#fid = open('/Users/katemcgarva/Desktop/NewGmin/results/bending_stiffness/lamina_NROD10_NSEG_200_RAT5/0.019F_S0K30.0001BsRat1.0Obc0.05_1/lowest', 'r')
 
 angles=np.loadtxt(fid,skiprows=nheader)
 fid.close
@@ -36,8 +31,6 @@ fid.close
 
 #4) Restructure the data and convert to xy
 LS=L/N_SEG
-#LENGTHS=X[1990:] #1990
-#print(len(LENGTHS))
 coords=np.zeros([N_ROD,N_SEG,2])
 coords[:,0,0]=inits[:,0]
 coords[:,0,1]=inits[:,1]
@@ -57,10 +50,10 @@ for i in range(0,N_ROD):
 
 plt.show()
 
-#6) print length of each rod
+#6) print the length of each rod
 s=0
 for i in range(0,N_ROD):
 		lengths = np.zeros(N_ROD)
-		lengths[i]=np.sum(angles[199*i+1990:199*i+199+1990])+LS
+		lengths[i]=np.sum(angles[199*i+199*N_ROD:199*i+199*(N_ROD+1)])+LS
 
 		print(f"length {i+1}={lengths[i]}")
