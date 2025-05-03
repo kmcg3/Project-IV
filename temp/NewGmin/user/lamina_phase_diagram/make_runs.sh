@@ -16,10 +16,8 @@
  # applied force set 
  F_I_ARRAY=($(seq 0.0267 0.001 0.05))
  F_S_ARRAY=($(seq 0.000 0.0005 0.000))
- # outer bedning stiffness fomapre to innner value
- BE_ARRAY=(0.1) #1 4
- # 0.01 0.05 0.22) 
- #1.0 4.0 20.0 100.0)
+ # outer bedning stiffness 
+ BE_ARRAY=(0.1) 
 
   K3_ARRAY=(0.0001 0.0005 0.001)
 
