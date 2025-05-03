@@ -18,8 +18,6 @@ This simulation:
 
 ---
 
-## Key Components
-
 | File | Description |
 |------|-------------|
 | [`potential.f90`](temp/NewGmin/source/override/lamina_new/potential.f90) | Energy and gradient definitions |
@@ -30,13 +28,14 @@ This simulation:
 
 ---
 
-## Custom Modifications
+## Modifications
 
 This version includes the following changes as part of a dissertation:
 
-- Changes to multiple files and function to model extensibility, including creating a `LENGTHS()` variable.
-- Added new energy gradient terms to `potential.f90` 
-- Developed (in progress) a new curvature-based energy and gradient formulation
+- Changes to the files mentioned above and multiple other files;
+- Introduced the `LENGTHS()` variable;
+- Added new energy and gradient terms to `potential.f90`;
+- Developing (in progress) a new curvature for the bending energy and gradient.
 
 ---
 
@@ -54,15 +53,14 @@ This will compile the Fortran code and begin the simulation process.
 
 ## Visualising Results
 
-After the simulation, the optimised configuration is saved in the `lowest` file. You can visualise it with:
+After the simulation, the lowest energy configuration is saved in the `lowest` file. You can visualise it with:
 
 ```bash
 python3 view_coords.py
 ```
 
 Make sure:
-- You are in `lamina_phase_diagram`
-- Python 3 and `matplotlib` are installed
+- You are in `lamina_phase_diagram`;
 - File paths in `view_coords.py` are correct
 - You are using the correct `lowest` file generated through running `make_runs.sh`
 
@@ -75,7 +73,7 @@ To modify the simulation:
 - Use [`potential.f90`](temp/NewGmin/source/override/lamina_new/potential.f90) to change energy/gradient calculations or add new terms
 - Use [`data.f90`](temp/NewGmin/user/lamina_phase_diagram/data.f90) and [`make_runs.sh`](temp/NewGmin/user/lamina_phase_diagram/make_runs.sh) to change the number of rods, initial conditions, segment lengths, etc.
 
-Other `.f90` files may also need edits depending on your extensions.
+Other `.f90` files may also need edits.
 
 ---
 
