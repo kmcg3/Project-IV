@@ -1,6 +1,6 @@
 # Modelling Traumatic Brain Injury
 
-This project simulates the mechanical behaviour of bundled filaments — relevant to understanding traumatic brain injury — using a Fortran-based LBFGS optimisation algorithm. The model minimises a custom energy functional to determine the equilibrium configuration of elastic rods under stress.
+This project simulates the behaviour of filament bundles — relevant to understanding traumatic brain injury — using a Fortran-based LBFGS algorithm. The model minimises a custom energy functional to determine the equilibrium configuration of elastic rods under loads.
 
 Originally developed by **Chris Prior** and **Jack Panter**, this version includes modifications for extensibility of the model and introduces some new energies and gradients.
 
