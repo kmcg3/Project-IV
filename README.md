@@ -64,7 +64,7 @@ Lengths of each filament in the bundle should be printed in the terminal.
 Make sure:
 - You are in `lamina_phase_diagram`;
 - File paths in `view_coords.py` are correct;
-- You are using the correct `lowest` file generated through running `make_runs.sh`.
+- You are using the correct `lowest` file, generated through running `make_runs.sh`.
 
 ---
 
