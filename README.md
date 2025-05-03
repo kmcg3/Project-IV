@@ -30,7 +30,7 @@ This simulation:
 
 ## Modifications
 
-This version includes the following changes as part of a dissertation:
+This version includes the following changes as part of the project:
 
 - Changes to the files mentioned above and multiple other `f.90` files;
 - Introduced the `LENGTHS()` variable;
