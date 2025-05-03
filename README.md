@@ -68,8 +68,8 @@ Make sure:
 
 ## Acknowledgements
 
-- Original code by **Chris Prior** and **Jack Panter**
-- Modified and extended for undergraduate work on  **modelling traumatic brain injury**
+- Original code by **Chris Prior** and **Jack Panter**;
+- Modified and extended for undergraduate work on  **modelling traumatic brain injury**.
 
 ---
 
